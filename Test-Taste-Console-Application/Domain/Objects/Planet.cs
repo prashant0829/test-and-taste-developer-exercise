@@ -1,37 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System;
 using Test_Taste_Console_Application.Domain.DataTransferObjects;
 
 namespace Test_Taste_Console_Application.Domain.Objects
 {
-    public class Planet
+public class Planet
+{
+    public string Id { get; set; }
+    public float SemiMajorAxis { get; set; }
+    public ICollection<Moon> Moons { get; set; }
+    public float AverageMoonGravity
     {
-        public string Id { get; set; }
-        public float SemiMajorAxis { get; set; }
-        public ICollection<Moon> Moons { get; set; }
-        public float AverageMoonGravity
+        get
         {
-            get => 0.0f;
-        }
-
-        public Planet(PlanetDto planetDto)
-        {
-            Id = planetDto.Id;
-            SemiMajorAxis = planetDto.SemiMajorAxis;
-            Moons = new Collection<Moon>();
-            if(planetDto.Moons != null)
+            if (Moons == null || Moons.Count == 0)
             {
-                foreach (MoonDto moonDto in planetDto.Moons)
-                {
-                    Moons.Add(new Moon(moonDto));
-                }
+                return 0.0f;
             }
-        }
 
-        public Boolean HasMoons()
-        {
-            return (Moons != null && Moons.Count > 0);
+            float totalGravity = 0.0f;
+            foreach (var moon in Moons)
+            {
+                totalGravity += moon.Gravity;
+            }
+
+            return totalGravity / Moons.Count;
         }
     }
+
+    public Planet(PlanetDto planetDto)
+    {
+        Id = planetDto.Id;
+        SemiMajorAxis = planetDto.SemiMajorAxis;
+        Moons = new Collection<Moon>();
+        if (planetDto.Moons != null)
+        {
+            foreach (MoonDto moonDto in planetDto.Moons)
+            {
+                Moons.Add(new Moon(moonDto));
+            }
+        }
+    }
+
+    public Boolean HasMoons()
+    {
+        return (Moons != null && Moons.Count > 0);
+    }
+}
 }
